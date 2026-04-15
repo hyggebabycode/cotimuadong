@@ -1,0 +1,885 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cortis Gift Window</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bungee&family=Nunito:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #07151f;
+        --sky: #96d8ff;
+        --neon: #ff7a45;
+        --mint: #4de4c5;
+        --bg-image: none;
+        --card: rgba(9, 21, 33, 0.54);
+        --card-line: rgba(220, 240, 255, 0.34);
+        --text: #f4fbff;
+        --subtle: #c5dce8;
+        --shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Nunito", sans-serif;
+        color: var(--text);
+        background-color: var(--ink);
+        background-image: var(--bg-image);
+        background-position: center;
+        background-size: contain;
+        background-repeat: no-repeat;
+        position: relative;
+        overflow-x: hidden;
+        display: grid;
+        place-items: center;
+        padding: 16px;
+      }
+
+      .icon-rail {
+        position: fixed;
+        top: 18px;
+        bottom: 18px;
+        width: clamp(72px, 9vw, 120px);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        align-items: center;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .icon-rail.left {
+        left: 10px;
+      }
+
+      .icon-rail.right {
+        right: 10px;
+      }
+
+      .rail-icon {
+        width: clamp(42px, 4.4vw, 62px);
+        height: clamp(42px, 4.4vw, 62px);
+        object-fit: cover;
+        border: 1px solid rgba(220, 240, 255, 0.32);
+        border-radius: 14px;
+        background: rgba(8, 20, 31, 0.3);
+        box-shadow:
+          0 8px 18px rgba(0, 0, 0, 0.28),
+          inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+      }
+
+      .stage {
+        width: min(520px, 96vw);
+        min-width: 320px;
+        max-width: 92vw;
+        min-height: 280px;
+        max-height: 92vh;
+        display: block;
+        padding: 0;
+        position: relative;
+        isolation: isolate;
+        z-index: 1;
+        resize: both;
+        overflow: auto;
+      }
+
+      .stage.after-start {
+        width: min(900px, calc(100vw - 24px));
+        height: min(700px, calc(100vh - 24px));
+        min-height: 640px;
+        max-width: calc(100vw - 24px);
+        max-height: calc(100vh - 24px);
+        resize: none;
+        overflow: hidden;
+      }
+
+      .stage.after-start .gift-window {
+        height: 100%;
+        max-height: none;
+      }
+
+      .stage::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -2;
+        border-radius: 22px;
+        background:
+          radial-gradient(
+            circle at 10% 5%,
+            rgba(77, 228, 197, 0.16),
+            transparent 36%
+          ),
+          radial-gradient(
+            circle at 82% 16%,
+            rgba(255, 122, 69, 0.13),
+            transparent 32%
+          ),
+          linear-gradient(145deg, rgba(3, 14, 26, 0.36), rgba(1, 8, 16, 0.3));
+      }
+
+      .stage::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        border-radius: 22px;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+        background-size: 44px 44px;
+        mask-image: radial-gradient(
+          circle at center,
+          black 52%,
+          transparent 100%
+        );
+        opacity: 0.11;
+        animation: drift 20s linear infinite;
+      }
+
+      @keyframes drift {
+        from {
+          transform: translateY(0);
+        }
+        to {
+          transform: translateY(-44px);
+        }
+      }
+
+      .intro,
+      .gift-window {
+        width: 100%;
+        border: 0.8px solid var(--card-line);
+        border-radius: 22px;
+        background: var(--card);
+        backdrop-filter: blur(6px);
+        box-shadow: var(--shadow);
+      }
+
+      .intro {
+        padding: 20px 16px;
+        background: rgba(9, 21, 33, 0.42);
+        backdrop-filter: blur(4px);
+        text-align: center;
+        animation: drop-in 0.7s ease both;
+      }
+
+      @keyframes drop-in {
+        from {
+          transform: translateY(-24px) scale(0.98);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0) scale(1);
+          opacity: 1;
+        }
+      }
+
+      .logo {
+        margin: 0;
+        font-family: "Bungee", cursive;
+        letter-spacing: 1px;
+        font-size: clamp(1.7rem, 3.8vw, 2.4rem);
+        color: var(--sky);
+        text-shadow: 0 0 18px rgba(150, 216, 255, 0.45);
+      }
+
+      .subtitle {
+        margin: 12px 0 24px;
+        color: var(--subtle);
+        font-size: clamp(1rem, 2vw, 1.2rem);
+      }
+
+      .input-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      input {
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.09);
+        color: var(--text);
+        padding: 12px 14px;
+        min-width: min(250px, 100%);
+        font-size: 1rem;
+        outline: none;
+        transition: border-color 0.2s ease;
+      }
+
+      input:focus {
+        border-color: var(--sky);
+      }
+
+      button {
+        border: 0;
+        border-radius: 14px;
+        padding: 12px 16px;
+        font-weight: 800;
+        font-family: "Nunito", sans-serif;
+        cursor: pointer;
+        transition:
+          transform 0.15s ease,
+          filter 0.2s ease;
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.08);
+      }
+
+      .btn-main {
+        background: linear-gradient(120deg, var(--mint), #77ffd5);
+        color: #053127;
+      }
+
+      .hint {
+        margin-top: 12px;
+        min-height: 22px;
+        color: #ffd6c6;
+      }
+
+      .gift-window {
+        display: none;
+        overflow: hidden;
+        max-height: min(92vh, 860px);
+        flex-direction: column;
+        animation: pop 0.5s ease both;
+      }
+
+      @keyframes pop {
+        from {
+          transform: scale(0.97);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      .content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 22px;
+        display: grid;
+        gap: 18px;
+      }
+
+      .headline {
+        margin: 0;
+        font-size: clamp(1.5rem, 3.2vw, 2.2rem);
+        line-height: 1.2;
+      }
+
+      .quote {
+        margin: 0;
+        font-size: clamp(1.02rem, 2.1vw, 1.16rem);
+        color: var(--subtle);
+      }
+
+      .question-line {
+        font-weight: 700;
+        color: #dff0ff;
+      }
+
+      .joke-box {
+        border: 1px dashed rgba(255, 255, 255, 0.36);
+        border-radius: 16px;
+        padding: 14px;
+        background: rgba(2, 11, 18, 0.45);
+        min-height: 66px;
+        display: grid;
+        align-items: center;
+      }
+
+      .controls {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+        align-items: stretch;
+      }
+
+      .controls-dock {
+        padding: 10px 22px 14px;
+        border-top: 1px solid rgba(220, 240, 255, 0.2);
+        background: linear-gradient(
+          to top,
+          rgba(9, 21, 33, 0.82),
+          rgba(9, 21, 33, 0.54)
+        );
+      }
+
+      .controls button {
+        min-width: 0;
+        width: 100%;
+        padding: 11px 10px;
+        line-height: 1.15;
+      }
+
+      .btn-joke {
+        background: linear-gradient(120deg, #ff9259, #ffbb66);
+        color: #291508;
+      }
+
+      .btn-bg {
+        background: linear-gradient(120deg, #91c6ff, #c5f1ff);
+        color: #0e2341;
+      }
+
+      .btn-meme {
+        background: linear-gradient(120deg, #70ffd0, #b7ffed);
+        color: #0f2a23;
+      }
+
+      .btn-exit {
+        background: linear-gradient(120deg, #ff8f8f, #ffc1c1);
+        color: #4b1515;
+      }
+
+      .meme-card {
+        position: relative;
+        display: block;
+        border-radius: 18px;
+        overflow: hidden;
+        border: 0.8px solid rgba(220, 240, 255, 0.4);
+        background: rgba(0, 0, 0, 0.25);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.38);
+      }
+
+      .meme-card::before,
+      .meme-card::after {
+        content: "";
+        position: absolute;
+        inset-block: 0;
+        width: 26%;
+        background-size: cover;
+        background-position: center;
+        opacity: 0.55;
+        z-index: 0;
+      }
+
+      .meme-card::before {
+        left: 0;
+        background-image: url("img/fun/juhoon.jpg");
+      }
+
+      .meme-card::after {
+        right: 0;
+        background-image: url("img/fun/Martin with his 4 kids.jpg");
+      }
+
+      .meme-card img {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        height: min(48vh, 440px);
+        object-fit: contain;
+        background: transparent;
+        display: block;
+      }
+
+      .meme-caption {
+        position: absolute;
+        left: 10px;
+        bottom: 10px;
+        z-index: 2;
+        margin: 0;
+        max-width: min(72%, 560px);
+        padding: 6px 10px;
+        color: #ffd95e;
+        font-weight: 700;
+        text-shadow:
+          0 1px 0 rgba(0, 0, 0, 0.7),
+          0 0 8px rgba(0, 0, 0, 0.45);
+        background: rgba(0, 0, 0, 0.28);
+        border-radius: 8px;
+      }
+
+      .confetti {
+        position: fixed;
+        top: -12px;
+        z-index: 20;
+        font-size: 1.2rem;
+        pointer-events: none;
+        animation: drop 1.8s linear forwards;
+      }
+
+      .yen-blast {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%) scale(0.86);
+        z-index: 45;
+        font-family: "Bungee", cursive;
+        font-size: clamp(2rem, 10vw, 5.6rem);
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #fff6d8;
+        text-shadow:
+          0 0 10px rgba(255, 151, 76, 0.95),
+          0 0 30px rgba(255, 107, 76, 0.95),
+          0 0 70px rgba(255, 107, 76, 0.7);
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .yen-blast.show {
+        animation: yen-pop 1.4s cubic-bezier(0.25, 1, 0.45, 1) forwards;
+      }
+
+      @keyframes yen-pop {
+        0% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0.7) rotate(-5deg);
+        }
+        28% {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1.12) rotate(2deg);
+        }
+        70% {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(0.98) rotate(0deg);
+        }
+        100% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(1.05);
+        }
+      }
+
+      .cortis-spray {
+        position: fixed;
+        left: 50%;
+        bottom: 8vh;
+        width: clamp(72px, 10vw, 140px);
+        aspect-ratio: 1;
+        object-fit: cover;
+        border-radius: 14px;
+        border: 2px solid rgba(255, 255, 255, 0.92);
+        box-shadow:
+          0 14px 24px rgba(0, 0, 0, 0.42),
+          0 0 0 1px rgba(255, 255, 255, 0.22);
+        pointer-events: none;
+        z-index: 35;
+        opacity: 0;
+        animation: spray-fly var(--dur, 1650ms) cubic-bezier(0.2, 0.8, 0.2, 1)
+          forwards;
+      }
+
+      @keyframes spray-fly {
+        0% {
+          transform: translate(-50%, 0) rotate(0deg) scale(0.4);
+          opacity: 0;
+        }
+        16% {
+          opacity: 1;
+        }
+        78% {
+          opacity: 1;
+        }
+        100% {
+          transform: translate(calc(-50% + var(--tx)), var(--ty))
+            rotate(var(--rot)) scale(1);
+          opacity: 0;
+        }
+      }
+
+      @keyframes drop {
+        to {
+          transform: translateY(110vh) rotate(420deg);
+          opacity: 0;
+        }
+      }
+
+      @media (max-width: 640px) {
+        body {
+          padding: 10px;
+        }
+
+        .icon-rail {
+          display: none;
+        }
+
+        .stage {
+          resize: none;
+          min-width: 0;
+          min-height: 0;
+          max-width: 100%;
+          max-height: none;
+          overflow: visible;
+          width: min(430px, 100%);
+        }
+
+        .stage.after-start {
+          width: min(430px, 100%);
+          height: auto;
+          min-height: 0;
+          overflow: visible;
+        }
+
+        .intro,
+        .gift-window {
+          border-radius: 18px;
+        }
+
+        .content {
+          padding: 14px;
+        }
+
+        .controls {
+          grid-template-columns: 1fr;
+          gap: 8px;
+        }
+
+        .controls-dock {
+          padding: 10px 14px 14px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <aside class="icon-rail left" aria-hidden="true">
+      <img class="rail-icon" data-side-icon src="" alt="Cortis icon" />
+      <img class="rail-icon" data-side-icon src="" alt="Cortis icon" />
+      <img class="rail-icon" data-side-icon src="" alt="Cortis icon" />
+      <img class="rail-icon" data-side-icon src="" alt="Cortis icon" />
+      <img class="rail-icon" data-side-icon src="" alt="Cortis icon" />
+      <img class="rail-icon" data-side-icon src="" alt="Cortis icon" />
+    </aside>
+
+    <aside class="icon-rail right" aria-hidden="true">
+      <img class="rail-icon" data-side-icon src="" alt="Cortis icon" />
+      <img class="rail-icon" data-side-icon src="" alt="Cortis icon" />
+      <img class="rail-icon" data-side-icon src="" alt="Cortis icon" />
+      <img class="rail-icon" data-side-icon src="" alt="Cortis icon" />
+      <img class="rail-icon" data-side-icon src="" alt="Cortis icon" />
+      <img class="rail-icon" data-side-icon src="" alt="Cortis icon" />
+    </aside>
+
+    <main class="stage">
+      <div id="yenBlast" class="yen-blast">GAY CORTIS</div>
+      <section class="intro" id="introScreen">
+        <h1 class="logo">CORTIS GAY CUOI</h1>
+        <p class="subtitle">cortis say hi</p>
+        <div class="input-row">
+          <input
+            id="nameInput"
+            type="text"
+            maxlength="30"
+            placeholder="Ten cua ban la..."
+            autocomplete="off"
+          />
+          <button id="startBtn" class="btn-main">Mo cua so qua</button>
+        </div>
+        <p id="hintText" class="hint"></p>
+      </section>
+
+      <section class="gift-window" id="giftWindow">
+        <div class="content">
+          <h2 id="headlineText" class="headline"></h2>
+
+          <div class="meme-card" id="memeCard">
+            <img id="memeImage" src="" alt="Cortis meme" />
+            <p id="memeCaption" class="meme-caption"></p>
+          </div>
+
+          <div class="joke-box">
+            <p id="jokeText" class="quote"></p>
+          </div>
+        </div>
+
+        <div class="controls controls-dock">
+          <button id="newJokeBtn" class="btn-joke">Rut cau treu moi</button>
+          <button id="changeBgBtn" class="btn-bg">Doi background</button>
+          <button id="memeBtn" class="btn-meme">Bat meme Cortis</button>
+          <button id="exitBtn" class="btn-exit">Thoat</button>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const backgroundImages = [
+        "img/background/cortis meme ♡.jpg",
+        "img/background/cortis wallpaper!!.jpg",
+        "img/background/cortis.jpg",
+      ];
+
+      const memeImages = [
+        "img/fun/download.jpg",
+        "img/fun/download (1).jpg",
+        "img/fun/download (2).jpg",
+        "img/fun/download (3).jpg",
+        "img/fun/download (4).jpg",
+        "img/fun/Juhoon (1).jpg",
+        "img/fun/Juhoon Cortis.jpg",
+        "img/fun/juhoon.jpg",
+        "img/fun/meme Juhoon.jpg",
+        "img/fun/MARTIN - CORTIS.jpg",
+        "img/fun/Martin with his 4 kids.jpg",
+        "img/fun/TOMATIS (this is my edits😝💅 i posted it at weverse too).jpg",
+        "img/fun/[CORTIS] SEONGHYEON.jpg",
+        "img/otp/CORTIS.jpg",
+        "img/otp/download.jpg",
+        "img/otp/download (1).jpg",
+        "img/otp/download (2).jpg",
+        "img/otp/download (3).jpg",
+        "img/otp/download (4).jpg",
+        "img/otp/download (5).jpg",
+        "img/otp/download (6).jpg",
+        "img/otp/download (7).jpg",
+        "img/otp/keonhyeon.jpg",
+        "img/otp/martin, juhoon & james🙏.jpg",
+        "img/otp/Our Special MC for MCOUNTDOWN 📸.jpg",
+        "img/otp/Period_ 🥵.jpg",
+        "img/background/cortis meme ♡.jpg",
+        "img/background/cortis wallpaper!!.jpg",
+        "img/background/cortis.jpg",
+      ];
+
+      const sprayImages = [...memeImages, ...memeImages];
+
+      const introScreen = document.getElementById("introScreen");
+      const giftWindow = document.getElementById("giftWindow");
+      const stageRoot = document.querySelector(".stage");
+      const nameInput = document.getElementById("nameInput");
+      const startBtn = document.getElementById("startBtn");
+      const hintText = document.getElementById("hintText");
+      const headlineText = document.getElementById("headlineText");
+      const jokeText = document.getElementById("jokeText");
+      const newJokeBtn = document.getElementById("newJokeBtn");
+      const changeBgBtn = document.getElementById("changeBgBtn");
+      const memeBtn = document.getElementById("memeBtn");
+      const exitBtn = document.getElementById("exitBtn");
+      const memeCard = document.getElementById("memeCard");
+      const memeImage = document.getElementById("memeImage");
+      const memeCaption = document.getElementById("memeCaption");
+      const sideIconSlots = document.querySelectorAll("[data-side-icon]");
+      const yenBlast = document.getElementById("yenBlast");
+
+      const sideIconImages = [
+        "img/background/cortis meme ♡.jpg",
+        "img/fun/download.jpg",
+        "img/fun/download (1).jpg",
+        "img/fun/download (2).jpg",
+        "img/fun/download (3).jpg",
+        "img/fun/download (4).jpg",
+        "img/fun/Juhoon (1).jpg",
+        "img/fun/Juhoon Cortis.jpg",
+        "img/fun/juhoon.jpg",
+        "img/fun/meme Juhoon.jpg",
+        "img/fun/MARTIN - CORTIS.jpg",
+        "img/fun/Martin with his 4 kids.jpg",
+        "img/fun/TOMATIS (this is my edits😝💅 i posted it at weverse too).jpg",
+        "img/fun/[CORTIS] SEONGHYEON.jpg",
+        "img/otp/CORTIS.jpg",
+        "img/otp/download.jpg",
+        "img/otp/download (1).jpg",
+        "img/otp/download (2).jpg",
+        "img/otp/download (3).jpg",
+        "img/otp/download (4).jpg",
+        "img/otp/download (5).jpg",
+        "img/otp/download (6).jpg",
+        "img/otp/download (7).jpg",
+        "img/otp/keonhyeon.jpg",
+        "img/otp/martin, juhoon & james🙏.jpg",
+        "img/otp/Our Special MC for MCOUNTDOWN 📸.jpg",
+        "img/otp/Period_ 🥵.jpg",
+      ];
+
+      const memeCaptions = [
+        "Khoanh khac Cortis nhin camera va camera tu do tu tin hon.",
+        "Bieu cam nay duoc cham diem 11/10 boi hoi dong vui tinh.",
+        "Neu Cortis la mon hoc, mon nay co 100% ty le cuoi.",
+        "Meme level: hop le ve mat khoa hoc va giai tri.",
+        "Bao cao noi bo: Cortis vua dat cap do 'pha game bang su dang yeu'.",
+        "Khong can bo loc, Cortis van gay sat thuong bang tieng cuoi.",
+        "Nguoi xem da thu cuoi nhe va ket qua la cuoi lon.",
+        "Meme nay da duoc cap phep boi vien nghien cuu niem vui.",
+        "Noi it hieu nhieu: day la nang luong Cortis thuong hang.",
+        "Muc do giai tri o khung nay da vuot nguong canh bao.",
+      ];
+
+      let activeName = "";
+      let bgIndex = Math.floor(Math.random() * backgroundImages.length);
+
+      function setBackground(index) {
+        bgIndex = (index + backgroundImages.length) % backgroundImages.length;
+        document.body.style.setProperty(
+          "--bg-image",
+          `url("${backgroundImages[bgIndex]}")`,
+        );
+      }
+
+      function pickRandom(items) {
+        return items[Math.floor(Math.random() * items.length)];
+      }
+
+      function generateJoke(name) {
+        const jokes = [
+          `${name} vua vao cua, Cortis da tu tang minh huy chuong "than thien cap toc".`,
+          `${name} oi, neu cuoi la KPI thi hom nay ban da vuot chi tieu voi Cortis roi.`,
+          `Thong bao nong: Cortis vua duoc cap chung nhan "gay cuoi nhung vo hai" cho ${name}.`,
+          `${name} + Cortis = cong thuc giai toa stress trong 5 phut (co khi 3 phut).`,
+          `Sau khi gap ${name}, Cortis quyet tam song tu te va meme hon moi ngay.`,
+        ];
+
+        return pickRandom(jokes);
+      }
+
+      function burstConfetti() {
+        const symbols = ["*", "+", "o", "@", "#"];
+        for (let i = 0; i < 20; i += 1) {
+          const piece = document.createElement("span");
+          piece.className = "confetti";
+          piece.textContent = pickRandom(symbols);
+          piece.style.left = `${Math.random() * 100}vw`;
+          piece.style.color = pickRandom([
+            "#ffbe0b",
+            "#70ffd0",
+            "#9ad6ff",
+            "#ff9f66",
+          ]);
+          piece.style.animationDuration = `${1.2 + Math.random() * 1.4}s`;
+          document.body.appendChild(piece);
+          setTimeout(() => piece.remove(), 2200);
+        }
+      }
+
+      function showNewMeme() {
+        memeCard.style.display = "block";
+        memeImage.src = pickRandom(memeImages);
+        memeCaption.textContent = pickRandom(memeCaptions);
+      }
+
+      function fillSideIcons() {
+        const pool = [...sideIconImages];
+
+        sideIconSlots.forEach((slot) => {
+          if (pool.length === 0) {
+            pool.push(...sideIconImages);
+          }
+
+          const pickIndex = Math.floor(Math.random() * pool.length);
+          slot.src = pool.splice(pickIndex, 1)[0];
+        });
+      }
+
+      function normalizeName(value) {
+        return value
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/\s+/g, "")
+          .toLowerCase();
+      }
+
+      function sprayCortisImages(count = 20) {
+        for (let i = 0; i < count; i += 1) {
+          const img = document.createElement("img");
+          img.className = "cortis-spray";
+          img.src = pickRandom(sprayImages);
+          img.alt = "Cortis spray";
+
+          const tx = `${-45 + Math.random() * 90}vw`;
+          const ty = `${-20 - Math.random() * 72}vh`;
+          const rot = `${-80 + Math.random() * 160}deg`;
+          const dur = `${1300 + Math.random() * 950}ms`;
+
+          img.style.setProperty("--tx", tx);
+          img.style.setProperty("--ty", ty);
+          img.style.setProperty("--rot", rot);
+          img.style.setProperty("--dur", dur);
+          img.style.left = `${46 + Math.random() * 8}%`;
+
+          document.body.appendChild(img);
+          setTimeout(() => img.remove(), 2500);
+        }
+      }
+
+      function triggerYenMode() {
+        yenBlast.classList.remove("show");
+        void yenBlast.offsetWidth;
+        yenBlast.classList.add("show");
+        burstConfetti();
+        burstConfetti();
+        sprayCortisImages(26);
+
+        setTimeout(() => {
+          yenBlast.classList.remove("show");
+        }, 1450);
+      }
+
+      function startGift() {
+        const rawName = nameInput.value.trim();
+        if (!rawName) {
+          hintText.textContent =
+            "Nhap ten da ne, de Cortis con goi trung muc tieu.";
+          nameInput.focus();
+          return;
+        }
+
+        activeName = rawName;
+        hintText.textContent = "";
+        introScreen.style.display = "none";
+        giftWindow.style.display = "flex";
+        stageRoot.classList.add("after-start");
+
+        headlineText.textContent = `Xin chao ${activeName}! Qua vui cho ban da san sang.`;
+        showNewMeme();
+        jokeText.textContent = generateJoke(activeName);
+        burstConfetti();
+
+        if (normalizeName(activeName) === "yen") {
+          triggerYenMode();
+        }
+      }
+
+      startBtn.addEventListener("click", startGift);
+      nameInput.addEventListener("input", () => {
+        hintText.textContent = "";
+      });
+      nameInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          startGift();
+        }
+      });
+
+      newJokeBtn.addEventListener("click", () => {
+        jokeText.textContent = generateJoke(activeName || "ban");
+      });
+
+      changeBgBtn.addEventListener("click", () => {
+        setBackground(bgIndex + 1);
+        fillSideIcons();
+      });
+
+      memeBtn.addEventListener("click", () => {
+        showNewMeme();
+        burstConfetti();
+        sprayCortisImages(10);
+      });
+
+      exitBtn.addEventListener("click", () => {
+        giftWindow.style.display = "none";
+        introScreen.style.display = "block";
+        stageRoot.classList.remove("after-start");
+        nameInput.focus();
+      });
+
+      setBackground(bgIndex);
+      fillSideIcons();
+      nameInput.focus();
+    </script>
+  </body>
+</html>
